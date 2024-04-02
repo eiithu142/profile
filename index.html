@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post Feed</title>
+<style>
+  /* CSS styles for the post feed */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  .container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .post-form textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+  }
+  .post-form button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .post {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  /* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+h2 {
+  width: 100%;
+  font-size: 10px;
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+button {
+  font-size: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .profile-cover {
+    width: 100%;
+    height: 100px; /* Adjust as needed */
+    background-color: #ddd;
+    background-position: center;
+    background-size: cover;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .profile-picture {
+    width: 100px; /* Adjust as needed */
+    height: 100px; /* Adjust as needed */
+    border-radius: 50%;
+    border: 5px solid #fff;
+    position: absolute;
+    /* Half of the height */
+    left: 20px;
+    overflow: hidden;
+  }
+  .profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .login-username {
+    margin-top: 120px;
+    font-weight: bold;
+  }
+  .delete-symbol {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: red;
+    cursor: pointer;
+    display: none;
+  }
+  .delete-symbol:hover {
+    color: darkred;
+  }
+</style>
+</head>
+<div class="container">
+  <div class="profile-cover" id="profile-cover">
+    <img src="default-cover.jpg" alt="Cover Photo">
+  </div>
+  <div class="profile-picture" id="profile-picture">
+    <img src="default-profile.jpg" alt="Profile Photo">
+  </div>
+  <div class="login-username" id="login-username"></div>
+</div>
+
+<!-- Hidden input fields for file upload -->
+<input type="file" id="cover-photo" style="display: none;">
+<input type="file" id="profile-photo" style="display: none;">
+<body>
+
+  <h2>Post Feed</h2>
+  <div id="post-feed"></div>
+</div>
+  <h2>Post Something</h2>
+  <div class="post-form">
+    <textarea id="post-content" placeholder="Write your post here..."></textarea>
+    <button onclick="publishPost()">Publish</button>
+  </div>
+
+  
+
+<script>
+  // Function to handle cover photo upload
+  document.getElementById('profile-cover').addEventListener('click', function() {
+    document.getElementById('cover-photo').click();
+  });
+
+  document.getElementById('cover-photo').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        document.getElementById('profile-cover').querySelector('img').src = event.target.result;
+        saveProfilePhoto(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Function to handle profile photo upload
+  document.getElementById('profile-picture').addEventListener('click', function() {
+    document.getElementById('profile-photo').click();
+  });
+
+  document.getElementById('profile-photo').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        document.getElementById('profile-picture').querySelector('img').src = event.target.result;
+        saveProfilePhoto(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Function to save profile photo along with username
+  function saveProfilePhoto(photoData) {
+    const username = localStorage.getItem('username');
+    if (username) {
+      localStorage.setItem(`${username}_profile_photo`, photoData);
+    }
+  }
+
+  // Display logged-in username
+  const username = localStorage.getItem('username');
+  if (username) {
+    document.getElementById('login-username').textContent = `${username}`;
+  } else {
+    document.getElementById('login-username').textContent = 'User not logged in';
+  }
+
+
+
+
+
+
+
+
+
+ // script.js
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById('search-input');
+  const searchButton = document.getElementById('search-button');
+  const resultContainer = document.getElementById('result-container');
+
+  // Sample list of saved usernames
+  const savedUsernames = [''];
+
+  // Function to display search results
+  function displayResults(results) {
+    resultContainer.innerHTML = ''; // Clear previous results
+    if (results.length === 0) {
+      resultContainer.textContent = 'No matching usernames found.';
+    } else {
+      const resultList = document.createElement('ul');
+      results.forEach(function(username) {
+        const listItem = document.createElement('li');
+        listItem.textContent = username;
+        resultList.appendChild(listItem);
+      });
+      resultContainer.appendChild(resultList);
+    }
+  }
+
+  // Function to perform search
+  function searchUsername(query) {
+    const results = savedUsernames.filter(function(username) {
+      return username.toLowerCase().includes(query.toLowerCase());
+    });
+    displayResults(results);
+  }
+
+  // Event listener for search button click
+  searchButton.addEventListener('click', function() {
+    const query = searchInput.value.trim();
+    if (query !== '') {
+      searchUsername(query);
+    } else {
+      alert('Please enter a username to search.');
+    }
+  });
+
+  // Listen for 'Enter' key press to perform search
+  searchInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      searchButton.click();
+    }
+  });
+});
+
+
+
+
+
+  // Function to publish a post
+  function publishPost() {
+    const postContent = document.getElementById('post-content').value.trim();
+    if (postContent !== '') {
+      const currentUser = localStorage.getItem('username') || 'Anonymous';
+      const post = {
+        id: Date.now(),
+        username: currentUser,
+        content: postContent
+      };
+      let posts = JSON.parse(localStorage.getItem('posts')) || [];
+      posts.unshift(post); // Add post to the beginning of the array
+      localStorage.setItem('posts', JSON.stringify(posts));
+      displayPosts();
+      document.getElementById('post-content').value = ''; // Clear textarea
+    } else {
+      alert('Please enter some content before publishing.');
+    }
+  }
+
+  // Function to display all posts
+  function displayPosts() {
+    const postFeed = document.getElementById('post-feed');
+    postFeed.innerHTML = '';
+    const posts = JSON.parse(localStorage.getItem('posts')) || [];
+    posts.forEach(post => {
+      const postElement = document.createElement('div');
+      postElement.classList.add('post');
+      postElement.innerHTML = `
+        <p>${post.content}</p>
+        <small>Posted by ${post.username} on ${new Date(post.id).toLocaleString()}</small>
+      `;
+      postFeed.appendChild(postElement);
+    });
+  }
+  
+
+  // Set the username in localStorage
+  function setUsername() {
+    const username = prompt('Please enter your username:');
+    if (username !== null && username.trim() !== '') {
+      localStorage.setItem('username', username.trim());
+      displayPosts();
+    } else {
+      alert('Invalid username. Please try again.');
+      setUsername();
+    }
+  }
+
+  // Check if the username is set
+  if (!localStorage.getItem('username')) {
+    setUsername();
+  } else {
+    displayPosts();
+  }
+
+
+
+
+
+
+
+  
+</script>
+
+</body>
+</html>
